@@ -1,39 +1,351 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Green Haven | 3D Plant Nursery</title>
-    <!-- CSS ko HEAD mein direct link karna zaroori hai -->
-    <link rel="stylesheet" href="./style.css" />
-  </head>
-  <body>
-    <!-- 3D Canvas Background -->
-    <canvas id="webgl"></canvas>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sujal Plant Nursery - Premium Greenery</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
+        .dark-glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
 
-    <!-- UI Overlay -->
-    <nav class="navbar">
-      <div class="logo">🌱 GreenHaven</div>
-      <div class="nav-links">
-        <a href="#nursery">Plants</a>
-        <a href="#about">About Us</a>
-      </div>
-    </nav>
+    <div id="canvas-container"></div>
 
-    <main class="hero">
-      <div class="hero-content">
-        <h1>Bring Nature<br><span>Into Your Space</span></h1>
-        <p>Discover 50+ hand-picked fruit, indoor, and medicinal plants in our interactive 3D nursery.</p>
-        <a href="#nursery" class="btn-primary">Explore Nursery</a>
-      </div>
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 glass border-b border-emerald-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-emerald-800 flex items-center gap-2">
+                    <i class="fa-solid fa-leaf text-emerald-600"></i> Sujal Nursery
+                </h1>
+                <p class="text-xs text-slate-500">Founder: Sujal Patidar</p>
+            </div>
+            <nav class="hidden md:flex gap-6 font-medium text-slate-700">
+                <a href="#home" onclick="showPage('home')" class="hover:text-emerald-600">Home</a>
+                <a href="#plants" onclick="showPage('plants')" class="hover:text-emerald-600">Plants Gallery</a>
+                <a href="#contact" onclick="showPage('contact')" class="hover:text-emerald-600">Contact Us</a>
+            </nav>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleCart()" class="relative p-2 text-emerald-800 hover:text-emerald-600">
+                    <i class="fa-solid fa-cart-shopping text-2xl"></i>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-emerald-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full z-10">
+
+        <!-- Home Page Section -->
+        <section id="home-page" class="space-y-12">
+            <div class="glass p-8 md:p-12 rounded-3xl shadow-xl text-center border border-emerald-100">
+                <span class="bg-emerald-100 text-emerald-800 px-4 py-1.5 rounded-full text-sm font-semibold inline-block mb-4">🌱 Home Delivery Available</span>
+                <h2 class="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-4">Apne Ghar Ko Banayein Harabhara</h2>
+                <p class="text-slate-600 text-lg max-w-2xl mx-auto mb-8">Best quality 50+ plants available with fast home delivery. Direct from nursery to your doorstep.</p>
+                <button onclick="showPage('plants')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-3.5 rounded-xl transition shadow-lg shadow-emerald-200">
+                    Browse All Plants <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- Plants Gallery Section -->
+        <section id="plants-page" class="hidden space-y-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <h2 class="text-3xl font-bold text-slate-800">Explore Our Plants</h2>
+                <div class="flex gap-2 overflow-x-auto w-full md:w-auto pb-2">
+                    <button onclick="filterCategory('All')" class="px-4 py-2 rounded-lg bg-emerald-600 text-white font-medium text-sm">All</button>
+                    <button onclick="filterCategory('Fruit')" class="px-4 py-2 rounded-lg glass hover:bg-emerald-50 text-slate-700 font-medium text-sm">Fruit Plants</button>
+                    <button onclick="filterCategory('Flower')" class="px-4 py-2 rounded-lg glass hover:bg-emerald-50 text-slate-700 font-medium text-sm">Flowers</button>
+                    <button onclick="filterCategory('Medicinal')" class="px-4 py-2 rounded-lg glass hover:bg-emerald-50 text-slate-700 font-medium text-sm">Medicinal</button>
+                </div>
+            </div>
+            <div id="plants-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+        </section>
+
+        <!-- Contact Page Section -->
+        <section id="contact-page" class="hidden max-w-2xl mx-auto">
+            <div class="glass p-8 rounded-3xl shadow-lg border border-emerald-100">
+                <h2 class="text-3xl font-bold text-slate-800 mb-6 text-center">Contact Us</h2>
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4 p-4 rounded-xl bg-white/50 border border-slate-100">
+                        <i class="fa-solid fa-user text-2xl text-emerald-600"></i>
+                        <div>
+                            <p class="text-xs text-slate-500 font-medium">FOUNDER</p>
+                            <p class="text-lg font-bold text-slate-800">Sujal Patidar</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-4 rounded-xl bg-white/50 border border-slate-100">
+                        <i class="fa-solid fa-phone text-2xl text-emerald-600"></i>
+                        <div>
+                            <p class="text-xs text-slate-500 font-medium">PHONE NUMBER</p>
+                            <a href="tel:7773803261" class="text-lg font-bold text-emerald-700 hover:underline">7773803261</a>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-4 rounded-xl bg-white/50 border border-slate-100">
+                        <i class="fa-solid fa-truck-fast text-2xl text-emerald-600"></i>
+                        <div>
+                            <p class="text-xs text-slate-500 font-medium">DELIVERY</p>
+                            <p class="text-lg font-bold text-slate-800">Home Delivery Available Across Region</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <section id="nursery" class="nursery-section">
-      <h2>Our Collection (50+ Plants)</h2>
-      <div class="plant-grid" id="plant-grid"></div>
-    </section>
+    <!-- Footer -->
+    <footer class="glass border-t border-emerald-100 py-6 mt-12 z-10">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-slate-600">
+            <p>© 2026 Sujal Plant Nursery. Founder: Sujal Patidar | Call: 7773803261</p>
+        </div>
+    </footer>
 
-    <!-- Main JS / TS Entry Point -->
-    <script type="module" src="./main.js"></script>
-  </body>
+    <!-- Cart Drawer -->
+    <div id="cart-drawer" class="fixed inset-y-0 right-0 w-full max-w-md dark-glass text-white z-50 transform translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
+        <div class="p-6 flex justify-between items-center border-b border-slate-700">
+            <h3 class="text-xl font-bold"><i class="fa-solid fa-cart-shopping text-emerald-400 mr-2"></i> Your Cart</h3>
+            <button onclick="toggleCart()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-2xl"></i></button>
+        </div>
+        <div id="cart-items" class="flex-grow p-6 overflow-y-auto space-y-4"></div>
+        <div class="p-6 border-t border-slate-700 space-y-4">
+            <div class="flex justify-between text-lg font-bold">
+                <span>Total Amount:</span>
+                <span id="cart-total" class="text-emerald-400">₹0</span>
+            </div>
+            <button onclick="checkoutWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
+                <i class="fa-brands fa-whatsapp text-xl"></i> Order via WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <!-- Plant Details Modal -->
+    <div id="plant-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative space-y-4">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- JavaScript logic & Three.js background -->
+    <script>
+        // 50+ Plants Dataset
+        const plants = [
+            { id: 1, name: "Mango (आम)", price: 199, category: "Fruit", img: "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=400&q=80" },
+            { id: 2, name: "Neem (नीम)", price: 99, category: "Medicinal", img: "https://images.unsplash.com/photo-1603912699214-92627f304eb6?auto=format&fit=crop&w=400&q=80" },
+            { id: 3, name: "Banyan (बरगद)", price: 299, category: "Tree", img: "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=400&q=80" },
+            { id: 4, name: "Peepal (पीपल)", price: 149, category: "Tree", img: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=400&q=80" },
+            { id: 5, name: "Guava (अमरूद)", price: 199, category: "Fruit", img: "https://images.unsplash.com/photo-1536510233921-8e5043fce771?auto=format&fit=crop&w=400&q=80" },
+            { id: 6, name: "Coconut (नारियल)", price: 249, category: "Fruit", img: "https://images.unsplash.com/photo-1543773495-2cd9248a5bda?auto=format&fit=crop&w=400&q=80" },
+            { id: 7, name: "Banana (केला)", price: 199, category: "Fruit", img: "https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=400&q=80" },
+            { id: 8, name: "Papaya (पपीता)", price: 199, category: "Fruit", img: "https://images.unsplash.com/photo-1517260739337-6799d239ce83?auto=format&fit=crop&w=400&q=80" },
+            { id: 9, name: "Lemon (नींबू)", price: 129, category: "Fruit", img: "https://images.unsplash.com/photo-1534531173927-aeb928d54385?auto=format&fit=crop&w=400&q=80" },
+            { id: 10, name: "Orange (संतरा)", price: 199, category: "Fruit", img: "https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=400&q=80" },
+            { id: 11, name: "Rose (गुलाब)", price: 89, category: "Flower", img: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=400&q=80" },
+            { id: 12, name: "Sunflower (सूरजमुखी)", price: 79, category: "Flower", img: "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&w=400&q=80" },
+            { id: 13, name: "Tulsi (तुलसी)", price: 49, category: "Medicinal", img: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=400&q=80" },
+            { id: 14, name: "Aloe Vera (घृतकुमारी)", price: 69, category: "Medicinal", img: "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?auto=format&fit=crop&w=400&q=80" },
+            { id: 15, name: "Teak (सागौन)", price: 299, category: "Tree", img: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=400&q=80" },
+            { id: 16, name: "Sandalwood (चंदन)", price: 499, category: "Tree", img: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=400&q=80" }
+        ];
+
+        // Fill list with additional 35 items up to 51
+        const itemNames = [
+            ["Apple (सेब)", 199, "Fruit"], ["Pomegranate (अनार)", 199, "Fruit"], ["Grapes (अंगूर)", 199, "Fruit"],
+            ["Jamun (जामुन)", 199, "Fruit"], ["Tamarind (इमली)", 149, "Fruit"], ["Amla (आँवला)", 149, "Medicinal"],
+            ["Litchi (लीची)", 199, "Fruit"], ["Jackfruit (कटहल)", 199, "Fruit"], ["Lotus (कमल)", 119, "Flower"],
+            ["Jasmine (चमेली)", 89, "Flower"], ["Hibiscus (गुड़हल)", 89, "Flower"], ["Marigold (गेंदा)", 59, "Flower"],
+            ["Mint (पुदीना)", 39, "Medicinal"], ["Coriander (धनिया)", 39, "Vegetable"], ["Curry Leaf (करी पत्ता)", 49, "Medicinal"],
+            ["Spinach (पालक)", 39, "Vegetable"], ["Cabbage (पत्ता गोभी)", 49, "Vegetable"], ["Cauliflower (फूलगोभी)", 49, "Vegetable"],
+            ["Tomato (टमाटर)", 49, "Vegetable"], ["Potato (आलू)", 39, "Vegetable"], ["Onion (प्याज)", 39, "Vegetable"],
+            ["Garlic (लहसुन)", 59, "Vegetable"], ["Ginger (अदरक)", 59, "Vegetable"], ["Turmeric (हल्दी)", 59, "Medicinal"],
+            ["Chilli (मिर्च)", 39, "Vegetable"], ["Brinjal (बैंगन)", 49, "Vegetable"], ["Okra (भिंडी)", 49, "Vegetable"],
+            ["Pumpkin (कद्दू)", 49, "Vegetable"], ["Cucumber (खीरा)", 49, "Vegetable"], ["Bottle Gourd (लौकी)", 49, "Vegetable"],
+            ["Bitter Gourd (करेला)", 49, "Vegetable"], ["Radish (मूली)", 39, "Vegetable"], ["Carrot (गाजर)", 49, "Vegetable"],
+            ["Mustard (सरसों)", 39, "Crop"], ["Wheat (गेहूँ)", 29, "Crop"]
+        ];
+
+        itemNames.forEach((item, index) => {
+            plants.push({
+                id: 17 + index,
+                name: item[0],
+                price: item[1],
+                category: item[2],
+                img: `https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=400&q=80`
+            });
+        });
+
+        let cart = [];
+
+        // Page Navigation
+        function showPage(pageId) {
+            document.getElementById('home-page').classList.add('hidden');
+            document.getElementById('plants-page').classList.add('hidden');
+            document.getElementById('contact-page').classList.add('hidden');
+            document.getElementById(pageId + '-page').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Render Plants
+        function renderPlants(items) {
+            const grid = document.getElementById('plants-grid');
+            grid.innerHTML = items.map(p => `
+                <div class="glass rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition border border-emerald-50 flex flex-col">
+                    <img src="${p.img}" alt="${p.name}" class="w-full h-48 object-cover cursor-pointer" onclick="openModal(${p.id})">
+                    <div class="p-4 flex flex-col flex-grow justify-between">
+                        <div>
+                            <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-semibold">${p.category}</span>
+                            <h3 class="font-bold text-lg text-slate-800 mt-2 cursor-pointer hover:text-emerald-600" onclick="openModal(${p.id})">${p.name}</h3>
+                        </div>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-xl font-extrabold text-emerald-700">₹${p.price}</span>
+                            <button onclick="addToCart(${p.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterCategory(cat) {
+            if (cat === 'All') renderPlants(plants);
+            else renderPlants(plants.filter(p => p.category === cat));
+        }
+
+        // Cart Logic
+        function addToCart(id) {
+            const plant = plants.find(p => p.id === id);
+            const exist = cart.find(item => item.id === id);
+            if (exist) exist.qty += 1;
+            else cart.push({ ...plant, qty: 1 });
+            updateCart();
+        }
+
+        function updateCart() {
+            document.getElementById('cart-count').innerText = cart.reduce((acc, i) => acc + i.qty, 0);
+            const cartItemsContainer = document.getElementById('cart-items');
+            cartItemsContainer.innerHTML = cart.map(item => `
+                <div class="flex justify-between items-center bg-slate-800 p-3 rounded-lg">
+                    <div>
+                        <h4 class="font-bold text-sm">${item.name}</h4>
+                        <p class="text-emerald-400 text-xs">₹${item.price} x ${item.qty}</p>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <button onclick="changeQty(${item.id}, -1)" class="bg-slate-700 px-2 py-1 rounded text-xs">-</button>
+                        <span class="text-sm font-bold">${item.qty}</span>
+                        <button onclick="changeQty(${item.id}, 1)" class="bg-slate-700 px-2 py-1 rounded text-xs">+</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            const total = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+            document.getElementById('cart-total').innerText = `₹${total}`;
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+            updateCart();
+        }
+
+        function toggleCart() {
+            document.getElementById('cart-drawer').classList.toggle('translate-x-full');
+        }
+
+        function checkoutWhatsApp() {
+            if (cart.length === 0) return alert('Cart is empty!');
+            let msg = "Hello Sujal Nursery, I want to order:\n\n";
+            cart.forEach(i => msg += `- ${i.name} (${i.qty} x ₹${i.price})\n`);
+            const total = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+            msg += `\nTotal: ₹${total}\nAddress: [Please enter your address]`;
+            window.open(`https://wa.me/917773803261?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // Modal Logic
+        function openModal(id) {
+            const p = plants.find(item => item.id === id);
+            document.getElementById('modal-content').innerHTML = `
+                <img src="${p.img}" class="w-full h-56 object-cover rounded-2xl mb-4">
+                <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded font-semibold">${p.category}</span>
+                <h3 class="text-2xl font-bold mt-2 text-slate-800">${p.name}</h3>
+                <p class="text-slate-600 text-sm mt-2">Healthy and premium quality plant ready for planting. Home delivery available.</p>
+                <div class="flex justify-between items-center mt-6">
+                    <span class="text-2xl font-extrabold text-emerald-700">₹${p.price}</span>
+                    <button onclick="addToCart(${p.id}); closeModal();" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2.5 rounded-xl transition">
+                        Add To Cart
+                    </button>
+                </div>
+            `;
+            document.getElementById('plant-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('plant-modal').classList.add('hidden');
+        }
+
+        // Three.js Background Animation
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        // Falling leaves simulation using particle system
+        const particlesCount = 200;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particlesCount * 3);
+
+        for (let i = 0; i < particlesCount * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 20;
+            positions[i + 1] = Math.random() * 20 - 10;
+            positions[i + 2] = (Math.random() - 0.5) * 20;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({
+            color: 0x10b981,
+            size: 0.15,
+            transparent: true,
+            opacity: 0.6
+        });
+
+        const particleSystem = new THREE.Points(geometry, material);
+        scene.add(particleSystem);
+        camera.position.z = 5;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const pos = particleSystem.geometry.attributes.position.array;
+            for (let i = 1; i < particlesCount * 3; i += 3) {
+                pos[i] -= 0.01;
+                if (pos[i] < -10) pos[i] = 10;
+            }
+            particleSystem.geometry.attributes.position.needsUpdate = true;
+            particleSystem.rotation.y += 0.001;
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Initialize
+        renderPlants(plants);
+        animate();
+    </script>
+</body>
 </html>
