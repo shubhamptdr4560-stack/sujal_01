@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Green Haven | 3D Plant Nursery</title>
+    <!-- CSS ko HEAD mein direct link karna zaroori hai -->
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- 3D Canvas Background -->
+    <canvas id="webgl"></canvas>
+
+    <!-- UI Overlay -->
+    <nav class="navbar">
+      <div class="logo">🌱 GreenHaven</div>
+      <div class="nav-links">
+        <a href="#nursery">Plants</a>
+        <a href="#about">About Us</a>
+      </div>
+    </nav>
+
+    <main class="hero">
+      <div class="hero-content">
+        <h1>Bring Nature<br><span>Into Your Space</span></h1>
+        <p>Discover 50+ hand-picked fruit, indoor, and medicinal plants in our interactive 3D nursery.</p>
+        <a href="#nursery" class="btn-primary">Explore Nursery</a>
+      </div>
+    </main>
+
+    <section id="nursery" class="nursery-section">
+      <h2>Our Collection (50+ Plants)</h2>
+      <div class="plant-grid" id="plant-grid"></div>
+    </section>
+
+    <!-- Main JS / TS Entry Point -->
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

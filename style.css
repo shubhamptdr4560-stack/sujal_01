@@ -1,0 +1,168 @@
+/* Hard reset to override browser defaults */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: #0b1712 !important; /* Forces dark green/black background */
+  color: #ffffff !important;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Fix Canvas positioning to stay strictly behind UI */
+#webgl {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+}
+
+/* UI Layout */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 4rem;
+  z-index: 10;
+  background: rgba(11, 23, 18, 0.85);
+  backdrop-filter: blur(10px);
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #4ade80;
+}
+
+.nav-links a {
+  color: #e2e8f0;
+  text-decoration: none;
+  margin-left: 2rem;
+  font-weight: 500;
+}
+
+.hero {
+  position: relative;
+  z-index: 2;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-left: 4rem;
+}
+
+.hero-content {
+  max-width: 500px;
+}
+
+.hero h1 {
+  font-size: 3.5rem;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.hero h1 span {
+  color: #4ade80;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  color: #94a3b8;
+  margin-bottom: 2rem;
+}
+
+.btn-primary {
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  background-color: #22c55e;
+  color: white;
+  text-decoration: none;
+  border-radius: 30px;
+  font-weight: 600;
+}
+
+/* Nursery Cards Grid */
+.nursery-section {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  padding: 6rem 4rem;
+  background: rgba(11, 23, 18, 0.95);
+}
+
+.nursery-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #4ade80;
+  text-align: center;
+}
+
+.plant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.plant-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  padding: 1.8rem;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.category-tag {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  margin-bottom: 0.8rem;
+}
+
+.plant-card h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.plant-card p {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #4ade80;
+}
+
+.buy-btn {
+  background-color: #22c55e;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
