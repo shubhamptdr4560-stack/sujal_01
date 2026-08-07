@@ -10,7 +10,7 @@
     <style>
         #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
         .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
-        .dark-glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); }
+        .dark-glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
@@ -101,27 +101,31 @@
 
     </main>
 
-    <!-- Footer -->
-    <footer class="glass border-t border-emerald-100 py-6 mt-12 z-10">
-        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-slate-600">
-            <p>© 2026 Sujal Plant Nursery. Founder: Sujal Patidar | Call: 7773803261</p>
-        </div>
-    </footer>
-
     <!-- Cart Drawer -->
     <div id="cart-drawer" class="fixed inset-y-0 right-0 w-full max-w-md dark-glass text-white z-50 transform translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
         <div class="p-6 flex justify-between items-center border-b border-slate-700">
             <h3 class="text-xl font-bold"><i class="fa-solid fa-cart-shopping text-emerald-400 mr-2"></i> Your Cart</h3>
             <button onclick="toggleCart()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-2xl"></i></button>
         </div>
+        
         <div id="cart-items" class="flex-grow p-6 overflow-y-auto space-y-4"></div>
-        <div class="p-6 border-t border-slate-700 space-y-4">
+        
+        <div class="p-6 border-t border-slate-700 space-y-4 bg-slate-900/80">
             <div class="flex justify-between text-lg font-bold">
                 <span>Total Amount:</span>
                 <span id="cart-total" class="text-emerald-400">₹0</span>
             </div>
+
+            <!-- QR Code Section -->
+            <div class="text-center bg-slate-800/80 p-3 rounded-xl border border-slate-700 my-2">
+                <p class="text-xs text-slate-400 mb-2">Scan & Pay via PhonePe / GPay / Paytm</p>
+                <img src="/qr-code.jpeg" alt="India Post Payments Bank QR Code" class="w-32 h-32 mx-auto rounded-lg border-2 border-emerald-500 bg-white p-1 object-contain">
+                <p class="text-xs text-slate-200 mt-2">Account: <b>India Post Payments Bank (IPPB)</b></p>
+                <p class="text-xs text-emerald-400 mt-0.5">UPI ID: <b>7773803261@ippb</b></p>
+            </div>
+
             <button onclick="checkoutWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
-                <i class="fa-brands fa-whatsapp text-xl"></i> Order via WhatsApp
+                <i class="fa-brands fa-whatsapp text-xl"></i> Send Address & Payment Screenshot
             </button>
         </div>
     </div>
@@ -156,7 +160,6 @@
             { id: 16, name: "Sandalwood (चंदन)", price: 499, category: "Tree", img: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=400&q=80" }
         ];
 
-        // Fill list with additional 35 items up to 51
         const itemNames = [
             ["Apple (सेब)", 199, "Fruit"], ["Pomegranate (अनार)", 199, "Fruit"], ["Grapes (अंगूर)", 199, "Fruit"],
             ["Jamun (जामुन)", 199, "Fruit"], ["Tamarind (इमली)", 149, "Fruit"], ["Amla (आँवला)", 149, "Medicinal"],
@@ -184,7 +187,6 @@
 
         let cart = [];
 
-        // Page Navigation
         function showPage(pageId) {
             document.getElementById('home-page').classList.add('hidden');
             document.getElementById('plants-page').classList.add('hidden');
@@ -193,7 +195,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Render Plants
         function renderPlants(items) {
             const grid = document.getElementById('plants-grid');
             grid.innerHTML = items.map(p => `
@@ -220,7 +221,6 @@
             else renderPlants(plants.filter(p => p.category === cat));
         }
 
-        // Cart Logic
         function addToCart(id) {
             const plant = plants.find(p => p.id === id);
             const exist = cart.find(item => item.id === id);
@@ -233,15 +233,15 @@
             document.getElementById('cart-count').innerText = cart.reduce((acc, i) => acc + i.qty, 0);
             const cartItemsContainer = document.getElementById('cart-items');
             cartItemsContainer.innerHTML = cart.map(item => `
-                <div class="flex justify-between items-center bg-slate-800 p-3 rounded-lg">
+                <div class="flex justify-between items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
                     <div>
                         <h4 class="font-bold text-sm">${item.name}</h4>
                         <p class="text-emerald-400 text-xs">₹${item.price} x ${item.qty}</p>
                     </div>
                     <div class="flex gap-2 items-center">
-                        <button onclick="changeQty(${item.id}, -1)" class="bg-slate-700 px-2 py-1 rounded text-xs">-</button>
+                        <button onclick="changeQty(${item.id}, -1)" class="bg-slate-700 hover:bg-slate-600 px-2 py-1 rounded text-xs">-</button>
                         <span class="text-sm font-bold">${item.qty}</span>
-                        <button onclick="changeQty(${item.id}, 1)" class="bg-slate-700 px-2 py-1 rounded text-xs">+</button>
+                        <button onclick="changeQty(${item.id}, 1)" class="bg-slate-700 hover:bg-slate-600 px-2 py-1 rounded text-xs">+</button>
                     </div>
                 </div>
             `).join('');
@@ -271,7 +271,6 @@
             window.open(`https://wa.me/917773803261?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        // Modal Logic
         function openModal(id) {
             const p = plants.find(item => item.id === id);
             document.getElementById('modal-content').innerHTML = `
@@ -302,7 +301,6 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         container.appendChild(renderer.domElement);
 
-        // Falling leaves simulation using particle system
         const particlesCount = 200;
         const geometry = new THREE.BufferGeometry();
         const positions = new Float32Array(particlesCount * 3);
@@ -343,7 +341,6 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // Initialize
         renderPlants(plants);
         animate();
     </script>

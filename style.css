@@ -304,3 +304,42 @@ html, body {
         align-items: center;
     }
 }
+/* Cart Payment QR Block Styling */
+.qr-container {
+    text-align: center;
+    background: #1e293b;
+    padding: 12px;
+    border-radius: 12px;
+    margin: 12px 0;
+    border: 1px solid #334155;
+}
+
+.qr-text {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-bottom: 8px;
+}
+
+.qr-image {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    border-radius: 8px;
+    border: 2px solid #059669;
+    display: block;
+    object-fit: contain;
+    background: #ffffff;
+    padding: 4px;
+}
+
+.bank-text {
+    font-size: 0.75rem;
+    color: #e2e8f0;
+    margin-top: 8px;
+}
+
+.upi-text {
+    font-size: 0.8rem;
+    color: #34d399;
+    margin-top: 4px;
+}
